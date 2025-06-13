@@ -1,4 +1,4 @@
-// 文件路径: tailwind.config.ts (这是我们手动创建的文件)
+// 文件路径: tailwind.config.ts
 import type { Config } from "tailwindcss";
 
 const config: Config = {
@@ -10,6 +10,6 @@ const config: Config = {
   theme: {
     extend: {},
   },
-  plugins: [require("tailwindcss-animate")], // 添加动画插件
+  plugins: [require("tailwindcss-animate")],
 };
 export default config;
