@@ -71,8 +71,10 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen w-full bg-slate-50 dark:bg-gray-900 flex items-center justify-center p-4 overflow-hidden relative">
-      <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]"></div>
+      {/* --- 这是酷炫背景的关键代码 --- */}
+      <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] dark:bg-slate-900"></div>
       <div className="absolute top-0 z-[-2] h-screen w-screen bg-transparent bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]"></div>
+      {/* ----------------------------- */}
 
       <div className="w-full max-w-md mx-auto bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50 rounded-2xl shadow-2xl shadow-slate-200/50 dark:shadow-black/50 p-8 space-y-6 animate-in fade-in-25 slide-in-from-bottom-8 duration-500">
         <div className="text-center">
