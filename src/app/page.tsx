@@ -1,8 +1,8 @@
 // 文件路径: src/app/page.tsx
 'use client';
 
-import { useState, DragEvent, ChangeEvent } from 'react';
-import { UploadCloud, Link, Copy, AlertTriangle, CheckCircle, LoaderCircle } from 'lucide-react';
+import { useState, DragEvent, ChangeEvent, useEffect } from 'react';
+import { UploadCloud, Link, Copy, AlertCircle, Check, Zap, FileCode, Shield } from 'lucide-react';
 
 export default function HomePage() {
   const [customKey, setCustomKey] = useState('');
@@ -11,6 +11,11 @@ export default function HomePage() {
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleFileChange = (file: File | null) => {
     if (file && (file.name.endsWith('.yaml') || file.name.endsWith('.yml'))) {
@@ -69,82 +74,155 @@ export default function HomePage() {
     });
   };
 
+  if (!mounted) return null;
+
   return (
-    <main className="min-h-screen w-full bg-slate-50 dark:bg-gray-900 flex items-center justify-center p-4 overflow-hidden relative">
-      {/* --- 这是酷炫背景的关键代码 --- */}
-      <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] dark:bg-slate-900"></div>
-      <div className="absolute top-0 z-[-2] h-screen w-screen bg-transparent bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]"></div>
-      {/* ----------------------------- */}
+    <main className="min-h-screen w-full relative flex items-center justify-center p-4 overflow-hidden bg-zinc-950 font-sans selection:bg-violet-500/30">
+      
+      {/* 动态流光背景 */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-violet-600/20 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-cyan-600/20 rounded-full blur-[120px] animate-pulse delay-1000" />
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay"></div>
+      </div>
 
-      <div className="w-full max-w-md mx-auto bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50 rounded-2xl shadow-2xl shadow-slate-200/50 dark:shadow-black/50 p-8 space-y-6 animate-in fade-in-25 slide-in-from-bottom-8 duration-500">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Clash Subscription Hub</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-2">Create & update your persistent subscription links.</p>
-        </div>
-
-        <div className="space-y-4">
-          <div>
-            <label htmlFor="custom-key" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 text-left">
-              Subscription Alias / Key
-            </label>
-            <input
-              type="text"
-              id="custom-key"
-              value={customKey}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => setCustomKey(e.target.value)}
-              placeholder="e.g., my-personal-config"
-              className="mt-1 block w-full px-3 py-2 bg-white/50 dark:bg-slate-700/50 border border-slate-300 dark:border-slate-600 rounded-lg text-sm shadow-sm placeholder-slate-400 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-            />
+      <div className="relative z-10 w-full max-w-lg">
+        {/* 卡片容器 */}
+        <div className="glass-card rounded-2xl p-8 transition-all duration-500 hover:shadow-violet-500/10 hover:border-violet-500/20 group">
+          
+          {/* 标题头 */}
+          <div className="flex flex-col items-center text-center space-y-4 mb-8">
+            <div className="p-3 rounded-xl bg-gradient-to-br from-violet-500/20 to-cyan-500/20 border border-white/5 animate-float">
+              <Shield className="w-8 h-8 text-transparent bg-clip-text bg-gradient-to-br from-violet-400 to-cyan-400 stroke-current" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-zinc-400 tracking-tight">
+                Subscription Hub
+              </h1>
+              <p className="text-zinc-500 text-sm mt-2 font-medium">
+                Securely host & distribute your Clash configs.
+              </p>
+            </div>
           </div>
 
-          <div
-            onDrop={handleDrop}
-            onDragOver={(e: DragEvent<HTMLDivElement>) => e.preventDefault()}
-            className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 dark:border-slate-600 border-dashed rounded-lg cursor-pointer hover:border-indigo-500 hover:bg-slate-50/50 dark:hover:bg-slate-700/50 transition-all duration-200"
-            onClick={() => (document.getElementById('file-input') as HTMLInputElement).click()}
-          >
-            <div className="space-y-1 text-center">
-              <UploadCloud className="mx-auto h-12 w-12 text-slate-400" />
-              <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                {selectedFile ? selectedFile.name : 'Drag & drop or click to upload'}
-              </p>
-              <p className="text-xs text-slate-500 dark:text-slate-500">.yaml or .yml file</p>
+          <div className="space-y-6">
+            
+            {/* 输入框组 */}
+            <div className="space-y-2">
+              <label htmlFor="custom-key" className="text-xs font-semibold uppercase tracking-wider text-zinc-500 ml-1">
+                Alias / Key
+              </label>
+              <div className="relative group/input">
+                <input
+                  type="text"
+                  id="custom-key"
+                  value={customKey}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => setCustomKey(e.target.value)}
+                  placeholder="e.g. my-private-server"
+                  className="input-field w-full px-4 py-3.5 rounded-xl outline-none pl-11"
+                  autoComplete="off"
+                />
+                <Zap className="absolute left-3.5 top-3.5 w-5 h-5 text-zinc-500 transition-colors group-focus-within/input:text-violet-400" />
+              </div>
+            </div>
+
+            {/* 拖拽上传区域 */}
+            <div
+              onDrop={handleDrop}
+              onDragOver={(e: DragEvent<HTMLDivElement>) => e.preventDefault()}
+              onClick={() => (document.getElementById('file-input') as HTMLInputElement).click()}
+              className={`
+                relative group/drop cursor-pointer rounded-xl border-2 border-dashed transition-all duration-300
+                flex flex-col items-center justify-center py-8 px-4 gap-3
+                ${selectedFile 
+                  ? 'border-emerald-500/50 bg-emerald-500/5' 
+                  : 'border-zinc-700 hover:border-violet-500/50 hover:bg-zinc-800/50'
+                }
+              `}
+            >
+              <div className={`
+                p-3 rounded-full transition-all duration-300
+                ${selectedFile ? 'bg-emerald-500/20 text-emerald-400' : 'bg-zinc-800 text-zinc-400 group-hover/drop:bg-violet-500/20 group-hover/drop:text-violet-400'}
+              `}>
+                {selectedFile ? <FileCode className="w-6 h-6" /> : <UploadCloud className="w-6 h-6" />}
+              </div>
+              <div className="text-center">
+                <p className={`text-sm font-medium transition-colors ${selectedFile ? 'text-emerald-400' : 'text-zinc-300'}`}>
+                  {selectedFile ? selectedFile.name : 'Click to upload config'}
+                </p>
+                {!selectedFile && <p className="text-xs text-zinc-500 mt-1">.yaml or .yml files supported</p>}
+              </div>
               <input id="file-input" type="file" className="sr-only" onChange={(e: ChangeEvent<HTMLInputElement>) => handleFileChange(e.target.files?.[0] || null)} accept=".yaml,.yml" />
             </div>
+
+            {/* 提交按钮 */}
+            <button
+              onClick={handleSubmit}
+              disabled={!customKey || !selectedFile || isLoading}
+              className={`
+                w-full py-3.5 rounded-xl font-semibold text-sm tracking-wide transition-all duration-300 relative overflow-hidden group/btn
+                disabled:opacity-50 disabled:cursor-not-allowed
+                ${!customKey || !selectedFile ? 'bg-zinc-800 text-zinc-500' : 'bg-gradient-to-r from-violet-600 to-indigo-600 hover:shadow-lg hover:shadow-violet-500/25 text-white transform hover:-translate-y-0.5'}
+              `}
+            >
+              <span className="relative z-10 flex items-center justify-center gap-2">
+                {isLoading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  'Generate Link'
+                )}
+              </span>
+            </button>
           </div>
+
+          {/* 状态反馈 */}
+          <div className="mt-6 space-y-4 min-h-[2rem]">
+            {error && (
+              <div className="animate-in fade-in slide-in-from-top-2 p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex gap-3 text-red-400 text-sm items-start">
+                <AlertCircle className="w-5 h-5 shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
+
+            {result && (
+              <div className="animate-in fade-in slide-in-from-top-2 space-y-3">
+                <div className="flex items-center gap-2 text-emerald-400 text-sm font-medium px-1">
+                  <Check className="w-4 h-4" />
+                  <span>Success! Link ready.</span>
+                </div>
+                
+                <div className="relative group/result">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-violet-500 to-cyan-500 rounded-xl opacity-30 blur group-hover/result:opacity-50 transition duration-500"></div>
+                  <div className="relative flex items-center bg-zinc-950 rounded-xl border border-zinc-800 p-1 pr-1.5 shadow-xl">
+                    <div className="pl-3 py-2.5 overflow-x-auto w-full no-scrollbar">
+                      <code className="text-sm font-mono text-zinc-300 whitespace-nowrap">{result}</code>
+                    </div>
+                    <button 
+                      onClick={() => copyToClipboard(result)}
+                      className={`
+                        shrink-0 p-2 rounded-lg transition-all duration-200 ml-2
+                        ${isCopied ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white'}
+                      `}
+                    >
+                      {isCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+                <p className="text-center text-xs text-zinc-600">
+                  Paste this URL into your Clash client subscription field.
+                </p>
+              </div>
+            )}
+          </div>
+          
         </div>
-
-        <button
-          onClick={handleSubmit}
-          disabled={!customKey || !selectedFile || isLoading}
-          className="w-full flex justify-center items-center gap-2 py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-50 dark:focus:ring-offset-slate-900 focus:ring-indigo-500 disabled:bg-slate-400 dark:disabled:bg-slate-600 disabled:cursor-not-allowed transition-all duration-200"
-        >
-          {isLoading ? <LoaderCircle className="animate-spin h-5 w-5" /> : 'Create / Update Link'}
-        </button>
-
-        { (error || result) && <div className="animate-in fade-in-25 slide-in-from-bottom-4 duration-500 pt-2">
-          {error && (
-            <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-500/30 p-3 rounded-lg flex items-start space-x-3">
-              <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-red-800 dark:text-red-300">{error}</p>
-            </div>
-          )}
-          {result && (
-            <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-500/30 p-4 rounded-lg space-y-3">
-              <div className="flex items-start space-x-3">
-                <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                <p className="text-sm font-medium text-green-800 dark:text-green-200">Success! Your link is ready:</p>
-              </div>
-              <div className="flex items-center space-x-2 bg-slate-100 dark:bg-slate-700/50 p-2 rounded-md">
-                <Link className="h-4 w-4 text-slate-500" />
-                <input type="text" readOnly value={result} className="text-sm text-slate-700 dark:text-slate-300 bg-transparent w-full focus:outline-none" />
-                <button onClick={() => copyToClipboard(result)} className="p-1 rounded-md hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
-                  {isCopied ? <CheckCircle className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4 text-slate-500" />}
-                </button>
-              </div>
-            </div>
-          )}
-        </div>}
+        
+        <div className="text-center mt-8 text-zinc-700 text-xs">
+          <p>© 2025 Clash Hub • Private Deployment</p>
+        </div>
       </div>
     </main>
   );

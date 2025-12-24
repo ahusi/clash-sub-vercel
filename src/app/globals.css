@@ -3,8 +3,46 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 可以在这里添加一些全局的基础样式 */
-body {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@layer base {
+  :root {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+  }
+  body {
+    @apply bg-zinc-950 text-zinc-50;
+  }
+}
+
+@layer utilities {
+  .animate-gradient-x {
+    background-size: 200% 200%;
+    animation: gradient-x 15s ease infinite;
+  }
+  
+  .glass-card {
+    @apply bg-zinc-900/40 backdrop-blur-xl border border-white/10 shadow-2xl;
+  }
+  
+  .input-field {
+    @apply bg-zinc-950/50 border-white/10 text-zinc-100 placeholder:text-zinc-500 focus:border-violet-500/50 focus:ring-violet-500/20 transition-all duration-300;
+  }
+}
+
+@keyframes gradient-x {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
 }
