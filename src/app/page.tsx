@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, DragEvent, ChangeEvent, useEffect } from 'react';
-import { FileText, Type, ArrowRight, Loader2, Check, Copy, AlertCircle, UploadCloud, ShieldCheck } from 'lucide-react';
+import { FileText, ArrowRight, Loader2, Check, Copy, AlertCircle, UploadCloud, ShieldCheck, Zap } from 'lucide-react';
 
 export default function HomePage() {
   const [customKey, setCustomKey] = useState('');
@@ -26,7 +26,7 @@ export default function HomePage() {
       setError(null);
     } else {
       setSelectedFile(null);
-      if (file) setError('格式错误：仅支持 .yaml 或 .yml 配置文件');
+      if (file) setError('格式错误：仅支持 .yaml 或 .yml 文件');
     }
   };
 
@@ -73,10 +73,10 @@ export default function HomePage() {
       });
       
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || '生成失败，请重试');
+      if (!response.ok) throw new Error(data.error || '生成失败');
       setResult(data.url);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '发生未知错误');
+      setError(err instanceof Error ? err.message : '未知错误');
     } finally {
       setIsLoading(false);
     }
@@ -91,200 +91,180 @@ export default function HomePage() {
   if (!mounted) return null;
 
   return (
-    <main className="min-h-screen w-full flex items-center justify-center p-8 sm:p-12 lg:p-20 bg-[#FDFDFD]">
+    // 使用 h-screen 和 overflow-hidden 确保不出现滚动条
+    <main className="h-screen w-full flex items-center justify-center bg-[#FDFDFD] overflow-hidden relative selection:bg-zinc-900 selection:text-white">
       
-      {/* 极度克制的背景光：像清晨的雾气 */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-10%] right-[-5%] w-[70vw] h-[70vw] bg-gray-50/80 rounded-full blur-[150px]" />
-        <div className="absolute bottom-[-10%] left-[-5%] w-[50vw] h-[50vw] bg-zinc-50/80 rounded-full blur-[150px]" />
+      {/* 背景光效：稍微减淡，避免干扰 */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute -top-[20%] -right-[10%] w-[60vw] h-[60vw] bg-zinc-50/80 rounded-full blur-[120px]" />
+        <div className="absolute -bottom-[20%] -left-[10%] w-[50vw] h-[50vw] bg-gray-50/80 rounded-full blur-[120px]" />
       </div>
 
-      <div className="relative z-10 w-full max-w-5xl animate-in fade-in slide-in-from-bottom-6 duration-1000">
+      {/* 主容器：限制最大高度，确保垂直居中 */}
+      <div className="relative z-10 w-full max-w-6xl px-6 lg:px-12 flex flex-col justify-center h-full max-h-[900px]">
         
-        {/* 巨型标题区 */}
-        <div className="mb-16 sm:mb-24 space-y-6">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-100 text-zinc-600 text-sm font-medium">
-            <ShieldCheck className="w-4 h-4" />
-            <span>私有化部署 · 安全托管</span>
+        {/* 顶部 Header：更紧凑 */}
+        <div className="flex items-center justify-between mb-8 sm:mb-12">
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-zinc-900 tracking-tight flex items-center gap-3">
+              配置托管中心
+              <span className="px-3 py-1 rounded-full bg-zinc-100 text-zinc-500 text-xs font-bold tracking-wider uppercase">PRO</span>
+            </h1>
+            <p className="text-zinc-400 mt-1 font-light text-base">安全、持久的 Clash 订阅分发服务</p>
           </div>
-          <h1 className="text-5xl sm:text-7xl font-bold text-zinc-900 tracking-tight leading-tight">
-            配置托管<span className="text-zinc-300">中心</span>
-          </h1>
-          <p className="text-xl text-zinc-500 max-w-2xl font-light leading-relaxed">
-            为您打造的极简 Clash 配置分发服务。
-            <br />
-            持久化存储，全终端秒级同步。
-          </p>
+          <div className="hidden sm:flex items-center gap-2 text-zinc-400 text-sm">
+            <ShieldCheck className="w-4 h-4" />
+            <span>私有化部署</span>
+          </div>
         </div>
 
-        {/* 核心交互区：左右分栏大布局 */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 items-start">
+        {/* 核心卡片：横向超宽布局 */}
+        <div className="bg-white border border-zinc-100 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] rounded-3xl p-1 overflow-hidden flex flex-col lg:flex-row h-auto lg:h-[520px]">
           
-          {/* 左侧：输入控制 (占 7 列) */}
-          <div className="lg:col-span-7 space-y-12">
+          {/* 左侧：操作区 (占 60% 宽度) */}
+          <div className="flex-1 p-6 sm:p-10 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-zinc-50">
             
-            {/* 1. 别名设置 */}
-            <div className="space-y-5">
-              <label className="text-xl font-semibold text-zinc-900 flex items-center gap-3">
-                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-zinc-900 text-white text-sm">1</span>
-                设定订阅别名
-              </label>
-              <input
-                type="text"
-                value={customKey}
-                onChange={(e) => setCustomKey(e.target.value)}
-                placeholder="例如：my-office-mac"
-                className="zen-input w-full h-20 px-8 rounded-3xl text-2xl tracking-wide"
-              />
-              <p className="text-sm text-zinc-400 pl-2">这将成为您订阅链接的唯一标识符。</p>
-            </div>
-
-            {/* 2. 内容来源 */}
-            <div className="space-y-5">
-              <div className="flex justify-between items-center">
-                <label className="text-xl font-semibold text-zinc-900 flex items-center gap-3">
-                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-zinc-900 text-white text-sm">2</span>
-                  导入配置内容
+            <div className="space-y-8">
+              {/* 1. 别名输入 */}
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-zinc-900 flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-zinc-900" />
+                  设定订阅别名
                 </label>
-                
-                {/* 切换开关 */}
-                <div className="flex bg-zinc-100 p-1.5 rounded-xl">
-                  <button 
-                    onClick={() => setUploadMode('file')}
-                    className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${uploadMode === 'file' ? 'bg-white shadow-md text-zinc-900' : 'text-zinc-500 hover:text-zinc-700'}`}
-                  >
-                    文件上传
-                  </button>
-                  <button 
-                    onClick={() => setUploadMode('text')}
-                    className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${uploadMode === 'text' ? 'bg-white shadow-md text-zinc-900' : 'text-zinc-500 hover:text-zinc-700'}`}
-                  >
-                    文本粘贴
-                  </button>
+                <div className="relative group">
+                  <input
+                    type="text"
+                    value={customKey}
+                    onChange={(e) => setCustomKey(e.target.value)}
+                    placeholder="输入唯一标识，如 my-server-01"
+                    className="zen-input w-full h-14 px-5 pl-12 rounded-xl text-lg bg-zinc-50/50 hover:bg-zinc-50 focus:bg-white border border-transparent focus:border-zinc-200 transition-all"
+                  />
+                  <Zap className="absolute left-4 top-4 w-5 h-5 text-zinc-400 group-focus-within:text-zinc-900 transition-colors" />
                 </div>
               </div>
 
-              <div className="min-h-[240px]">
-                {uploadMode === 'file' ? (
-                  <div
-                    onDragEnter={(e) => handleDrag(e, true)}
-                    onDragLeave={(e) => handleDrag(e, false)}
-                    onDragOver={(e) => handleDrag(e, true)}
-                    onDrop={handleDrop}
-                    onClick={() => document.getElementById('file-upload')?.click()}
-                    className={`
-                      w-full h-64 rounded-3xl border-2 border-dashed transition-all duration-300 cursor-pointer flex flex-col items-center justify-center gap-6
-                      ${isDragging || selectedFile 
-                        ? 'border-zinc-400 bg-zinc-50' 
-                        : 'border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50/60'}
-                    `}
-                  >
-                    <input id="file-upload" type="file" className="hidden" accept=".yaml,.yml" onChange={(e) => handleFileChange(e.target.files?.[0] || null)} />
-                    {selectedFile ? (
-                      <div className="text-center space-y-3 animate-in zoom-in-95 duration-300">
-                        <div className="w-16 h-16 bg-zinc-900 text-white rounded-2xl flex items-center justify-center shadow-xl mx-auto">
-                          <FileText className="w-8 h-8" />
-                        </div>
-                        <div>
-                          <p className="text-lg font-medium text-zinc-900">{selectedFile.name}</p>
-                          <p className="text-sm text-zinc-400">{(selectedFile.size / 1024).toFixed(1)} KB</p>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="text-center space-y-2">
-                        <div className="w-14 h-14 bg-zinc-100 rounded-full flex items-center justify-center mx-auto text-zinc-400">
-                          <UploadCloud className="w-7 h-7" />
-                        </div>
-                        <p className="text-lg text-zinc-500 font-medium">点击或拖拽 YAML 文件至此</p>
-                      </div>
-                    )}
+              {/* 2. 内容上传区 */}
+              <div className="space-y-3 flex-1 flex flex-col">
+                <div className="flex justify-between items-center">
+                  <label className="text-sm font-semibold text-zinc-900 flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-zinc-900" />
+                    配置内容
+                  </label>
+                  <div className="flex gap-4 text-xs font-medium text-zinc-400">
+                    <button onClick={() => setUploadMode('file')} className={`transition-colors ${uploadMode === 'file' ? 'text-zinc-900 border-b-2 border-zinc-900' : 'hover:text-zinc-600'}`}>文件上传</button>
+                    <button onClick={() => setUploadMode('text')} className={`transition-colors ${uploadMode === 'text' ? 'text-zinc-900 border-b-2 border-zinc-900' : 'hover:text-zinc-600'}`}>文本粘贴</button>
                   </div>
-                ) : (
-                  <textarea
-                    value={pastedContent}
-                    onChange={(e) => setPastedContent(e.target.value)}
-                    placeholder="请在此粘贴您的配置内容..."
-                    className="zen-input w-full h-64 p-8 rounded-3xl resize-none font-mono text-sm leading-relaxed"
-                    spellCheck={false}
-                  />
-                )}
+                </div>
+
+                <div className="flex-1 min-h-[200px]">
+                  {uploadMode === 'file' ? (
+                    <div
+                      onDragEnter={(e) => handleDrag(e, true)}
+                      onDragLeave={(e) => handleDrag(e, false)}
+                      onDragOver={(e) => handleDrag(e, true)}
+                      onDrop={handleDrop}
+                      onClick={() => document.getElementById('file-upload')?.click()}
+                      className={`
+                        w-full h-full min-h-[200px] rounded-xl border border-dashed transition-all duration-300 cursor-pointer flex flex-col items-center justify-center gap-4
+                        ${isDragging || selectedFile 
+                          ? 'border-zinc-400 bg-zinc-50' 
+                          : 'border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50/30'}
+                      `}
+                    >
+                      <input id="file-upload" type="file" className="hidden" accept=".yaml,.yml" onChange={(e) => handleFileChange(e.target.files?.[0] || null)} />
+                      {selectedFile ? (
+                        <div className="text-center animate-in fade-in zoom-in-95">
+                          <div className="w-12 h-12 bg-zinc-900 text-white rounded-lg flex items-center justify-center mx-auto mb-3 shadow-lg">
+                            <FileText className="w-6 h-6" />
+                          </div>
+                          <p className="font-medium text-zinc-900">{selectedFile.name}</p>
+                          <p className="text-xs text-zinc-400 mt-1">{(selectedFile.size / 1024).toFixed(1)} KB</p>
+                        </div>
+                      ) : (
+                        <div className="text-center">
+                          <UploadCloud className="w-10 h-10 text-zinc-300 mx-auto mb-3" />
+                          <span className="text-zinc-500 font-medium">点击或拖拽 YAML 文件</span>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <textarea
+                      value={pastedContent}
+                      onChange={(e) => setPastedContent(e.target.value)}
+                      placeholder="请在此粘贴配置内容..."
+                      className="w-full h-full min-h-[200px] p-5 rounded-xl bg-zinc-50/50 hover:bg-zinc-50 focus:bg-white border border-transparent focus:border-zinc-200 resize-none font-mono text-xs leading-relaxed outline-none transition-all"
+                      spellCheck={false}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* 右侧：状态与行动 (占 5 列) */}
-          <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-8">
+          {/* 右侧：状态与按钮 (占 40% 宽度，背景稍深一点点) */}
+          <div className="lg:w-[400px] bg-zinc-50/30 p-6 sm:p-10 flex flex-col justify-center space-y-8">
             
-            {/* 状态卡片 */}
-            <div className="zen-card rounded-[32px] p-8 space-y-6">
-              <h3 className="text-lg font-semibold text-zinc-900">准备就绪</h3>
-              
-              <div className="space-y-4">
-                <div className="flex justify-between items-center py-3 border-b border-zinc-100">
-                  <span className="text-zinc-500">别名检查</span>
-                  <span className={customKey ? "text-emerald-600 font-medium flex items-center gap-1" : "text-zinc-300"}>
-                    {customKey ? <><Check className="w-4 h-4" /> 通过</> : "待输入"}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center py-3 border-b border-zinc-100">
-                  <span className="text-zinc-500">内容检查</span>
-                  <span className={(uploadMode === 'file' && selectedFile) || (uploadMode === 'text' && pastedContent) ? "text-emerald-600 font-medium flex items-center gap-1" : "text-zinc-300"}>
-                    {(uploadMode === 'file' && selectedFile) || (uploadMode === 'text' && pastedContent) ? <><Check className="w-4 h-4" /> 已载入</> : "待载入"}
-                  </span>
-                </div>
-              </div>
-
-              {/* 错误提示 */}
-              {error && (
-                <div className="p-4 bg-red-50 text-red-600 text-sm rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
-                  <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-                  {error}
-                </div>
-              )}
-
-              {/* 成功结果 */}
-              {result && (
-                <div className="space-y-4 animate-in fade-in zoom-in-95 duration-300">
-                  <div className="p-1 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-2xl">
-                    <div className="bg-white rounded-xl p-4 flex flex-col gap-3">
-                      <div className="flex items-center gap-2 text-emerald-600 text-sm font-semibold uppercase tracking-wider">
-                        <Check className="w-4 h-4" /> 生成成功
-                      </div>
-                      <code className="text-xs text-zinc-600 break-all bg-zinc-50 p-3 rounded-lg font-mono">
-                        {result}
-                      </code>
+            {/* 状态展示 */}
+            <div className="flex-1 flex flex-col justify-center space-y-6">
+              {result ? (
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-4">
+                  <div className="flex items-center gap-2 text-emerald-600 font-semibold">
+                    <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
+                      <Check className="w-5 h-5" />
                     </div>
+                    <span>生成成功</span>
+                  </div>
+                  <div className="bg-white border border-zinc-200 p-4 rounded-xl shadow-sm">
+                    <p className="text-xs text-zinc-400 uppercase font-bold tracking-wider mb-2">订阅链接</p>
+                    <code className="text-xs text-zinc-600 font-mono break-all block">
+                      {result}
+                    </code>
                   </div>
                   <button 
                     onClick={() => copyToClipboard(result)}
-                    className="w-full py-4 rounded-xl bg-emerald-50 text-emerald-700 font-medium hover:bg-emerald-100 transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-3 rounded-xl border border-zinc-200 bg-white hover:bg-zinc-50 hover:border-zinc-300 text-zinc-700 font-medium transition-all flex items-center justify-center gap-2"
                   >
-                    {isCopied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
-                    {isCopied ? '已复制链接' : '复制订阅链接'}
+                    {isCopied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+                    {isCopied ? '已复制' : '复制链接'}
                   </button>
                 </div>
+              ) : (
+                <div className="space-y-6 opacity-60 pointer-events-none">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-zinc-200" />
+                    <div className="h-4 w-24 bg-zinc-200 rounded" />
+                  </div>
+                  <div className="h-24 bg-zinc-200 rounded-xl w-full" />
+                </div>
               )}
-
-              {/* 这里的按钮高度加到了 h-20 (80px)，极具分量感 */}
-              {!result && (
-                <button
-                  onClick={handleSubmit}
-                  disabled={!customKey || (uploadMode === 'file' ? !selectedFile : !pastedContent) || isLoading}
-                  className={`
-                    w-full h-20 rounded-3xl font-bold text-xl flex items-center justify-center gap-3
-                    ${!customKey || (uploadMode === 'file' ? !selectedFile : !pastedContent)
-                      ? 'bg-zinc-100 text-zinc-300 cursor-not-allowed'
-                      : 'zen-btn-primary'
-                    }
-                  `}
-                >
-                  {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <>立即生成 <ArrowRight className="w-6 h-6" /></>}
-                </button>
+              
+              {/* 错误提示 */}
+              {error && (
+                <div className="p-3 bg-red-50 text-red-600 text-sm rounded-xl flex items-start gap-2 animate-in fade-in">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                  {error}
+                </div>
               )}
             </div>
 
-            <div className="text-center text-zinc-400 text-sm">
-              © 2025 Clash Hub · 高性能边缘网络驱动
+            {/* 底部按钮 */}
+            <div>
+              <button
+                onClick={handleSubmit}
+                disabled={!customKey || (uploadMode === 'file' ? !selectedFile : !pastedContent) || isLoading}
+                className={`
+                  w-full h-16 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 shadow-xl shadow-zinc-200
+                  ${!customKey || (uploadMode === 'file' ? !selectedFile : !pastedContent)
+                    ? 'bg-zinc-200 text-zinc-400 cursor-not-allowed shadow-none'
+                    : 'bg-zinc-900 text-white hover:bg-black hover:scale-[1.02] active:scale-[0.98] transition-all'
+                  }
+                `}
+              >
+                {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>立即生成 <ArrowRight className="w-5 h-5" /></>}
+              </button>
+              <p className="text-center text-xs text-zinc-400 mt-4 font-light">
+                配置将存储于边缘网络，有效期 10 年
+              </p>
             </div>
 
           </div>
