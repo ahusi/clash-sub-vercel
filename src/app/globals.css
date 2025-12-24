@@ -9,28 +9,32 @@
     --foreground: 240 10% 3.9%;
   }
   body {
-    /* 极致的浅灰白底色，类似美术馆墙面 */
-    @apply bg-[#FAFAFA] text-zinc-900 antialiased selection:bg-black selection:text-white;
+    /* 使用极淡的“纸张白” */
+    @apply bg-[#FDFDFD] text-zinc-900 antialiased;
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
   }
 }
 
 @layer utilities {
-  .horizon-card {
-    @apply bg-white border border-zinc-100 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.08)];
+  /* 巨型卡片阴影：模拟自然天光 */
+  .zen-card {
+    @apply bg-white border border-zinc-100/50 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)];
   }
   
-  .horizon-input {
-    @apply bg-zinc-50 border-0 text-zinc-900 placeholder:text-zinc-400
-           focus:bg-white focus:ring-2 focus:ring-black/5
-           transition-all duration-300 outline-none;
+  /* 巨型输入框 */
+  .zen-input {
+    @apply bg-[#F8F8F8] border-0 text-zinc-900 placeholder:text-zinc-400
+           focus:bg-white focus:ring-4 focus:ring-zinc-100 focus:shadow-xl
+           transition-all duration-500 ease-out outline-none font-medium;
   }
 
-  .horizon-btn-primary {
-    @apply bg-zinc-900 text-white hover:bg-black hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 shadow-lg shadow-zinc-900/20;
+  /* 巨型按钮 */
+  .zen-btn-primary {
+    @apply bg-zinc-900 text-white hover:bg-black hover:scale-[1.005] hover:shadow-2xl hover:shadow-zinc-900/20 
+           active:scale-[0.99] transition-all duration-300;
   }
 
-  /* 这种超大模糊的圆，营造类似 Apple 官网的氛围光 */
-  .ambient-light {
-    background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.8) 0%, rgba(250,250,250,0) 100%);
+  .zen-badge {
+    @apply px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase;
   }
 }
