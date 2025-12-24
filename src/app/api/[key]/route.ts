@@ -4,17 +4,20 @@ import { NextResponse } from 'next/server';
 
 export const revalidate = 0; // 禁用缓存
 
-export async function GET(request: Request) {
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ key: string }> }
+) {
   try {
-    const url = new URL(request.url);
-    const pathParts = url.pathname.split('/api/');
-    const key = pathParts[1] ? decodeURIComponent(pathParts[1]) : '';
+    // Next.js 15 中，params 是一个 Promise，必须 await
+    const { key } = await params;
 
     if (!key) {
-      return new NextResponse('Invalid key in URL.', { status: 400 });
+      return new NextResponse('Invalid key provided.', { status: 400 });
     }
 
-    const config = await kv.get<string>(key);
+    const decodedKey = decodeURIComponent(key);
+    const config = await kv.get<string>(decodedKey);
 
     if (config === null) {
       return new NextResponse('Config not found. Please check your alias/key.', { status: 404 });
