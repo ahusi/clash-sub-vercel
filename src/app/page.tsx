@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, DragEvent, ChangeEvent, useEffect } from 'react';
-import { UploadCloud, Link, Copy, AlertCircle, Check, Zap, FileCode, Shield } from 'lucide-react';
+import { UploadCloud, Copy, AlertCircle, Check, Zap, FileCode, Shield } from 'lucide-react';
 
 export default function HomePage() {
   const [customKey, setCustomKey] = useState('');
